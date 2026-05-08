@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -23,13 +22,13 @@ class SocialiteController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'authentification Google.'
+                'message' => 'Erreur lors de l\'authentification Google.',
             ], 400);
         }
 
         $user = User::where('email', $googleUser->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
                 'name' => $googleUser->name,
                 'email' => $googleUser->email,
@@ -47,7 +46,7 @@ class SocialiteController extends Controller
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return redirect()->away(
-            config('app.frontend_url') . '/login?token=' . $token . '&user=' . urlencode(json_encode($user))
+            config('app.frontend_url').'/login?token='.$token.'&user='.urlencode(json_encode($user))
         );
     }
 }

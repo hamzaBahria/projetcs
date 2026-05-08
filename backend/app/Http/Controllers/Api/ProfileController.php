@@ -12,22 +12,26 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        $user->avatar_url = $user->avatar ? asset('storage/' . $user->avatar) : null;
+        $user->avatar_url = $user->avatar ? asset('storage/'.$user->avatar) : null;
+
         return response()->json([
             'success' => true,
-            'data' => $user
+            'data' => $user,
         ]);
     }
+
     public function update(UpdateProfileRequest $request)
     {
         $user = $request->user();
         $user->update($request->validated());
+
         return response()->json([
             'success' => true,
             'message' => 'Profil mis à jour avec succès.',
-            'data' => $user
+            'data' => $user,
         ]);
     }
+
     public function uploadAvatar(Request $request)
     {
         $request->validate([
@@ -40,10 +44,11 @@ class ProfileController extends Controller
         $path = $request->file('avatar')->store('avatars', 'public');
         $user->avatar = $path;
         $user->save();
+
         return response()->json([
             'success' => true,
             'message' => 'Avatar mis à jour.',
-            'avatar_url' => asset('storage/' . $path)
+            'avatar_url' => asset('storage/'.$path),
         ]);
     }
 }

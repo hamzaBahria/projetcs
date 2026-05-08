@@ -14,6 +14,7 @@ interface AuthResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = environment.apiUrl;
+  private apiBaseUrl = environment.apiUrl.replace(/\/api\/?$/, '');
   private tokenKey = 'auth_token';
   private userKey = 'auth_user';
 
@@ -64,6 +65,10 @@ export class AuthService {
   clearAuth(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
+  }
+
+  getGoogleLoginUrl(): string {
+    return `${this.apiBaseUrl}/api/auth/google`;
   }
 
   handleGoogleCallback(token: string, user: string): void {

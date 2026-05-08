@@ -59,6 +59,6 @@ export class LoginComponent implements OnInit {
   }
 
   loginGoogle(): void {
-    window.location.href = 'http://localhost:8000/api/auth/google';
+    window.location.href = this.authService.getGoogleLoginUrl();
   }
 }

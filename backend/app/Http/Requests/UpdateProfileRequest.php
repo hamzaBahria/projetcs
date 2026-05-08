@@ -14,9 +14,10 @@ class UpdateProfileRequest extends FormRequest
     public function rules()
     {
         $userId = $this->user()?->id;
+
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $userId,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$userId,
         ];
     }
 

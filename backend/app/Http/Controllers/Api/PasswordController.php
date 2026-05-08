@@ -20,7 +20,7 @@ class PasswordController extends Controller
         $status = Password::sendResetLink(
             $request->only('email'),
             function ($user, $token) {
-                $url = config('app.frontend_url') . '/reset-password?token=' . $token . '&email=' . urlencode($user->email);
+                $url = config('app.frontend_url').'/reset-password?token='.$token.'&email='.urlencode($user->email);
                 Mail::to($user)->send(new ResetPassword($url));
             }
         );
@@ -42,7 +42,7 @@ class PasswordController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
                 $user->forceFill([
-                    'password' => Hash::make($password)
+                    'password' => Hash::make($password),
                 ])->setRememberToken(Str::random(60));
                 $user->save();
             }
@@ -57,10 +57,10 @@ class PasswordController extends Controller
     {
         $user = $request->user();
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return response()->json([
                 'success' => false,
-                'message' => 'L\'ancien mot de passe est incorrect.'
+                'message' => 'L\'ancien mot de passe est incorrect.',
             ], 400);
         }
 
@@ -69,7 +69,7 @@ class PasswordController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Mot de passe modifié avec succès.'
+            'message' => 'Mot de passe modifié avec succès.',
         ]);
     }
 }
