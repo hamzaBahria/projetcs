@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SocialiteController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/health', fn () => response()->json(['status' => 'ok']));
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/password/forgot', [PasswordController::class, 'sendResetLink']);
