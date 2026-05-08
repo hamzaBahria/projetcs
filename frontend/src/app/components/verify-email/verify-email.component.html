@@ -1,0 +1,37 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div *ngIf="!status">
+      <div class="icon">&#9993;</div>
+      <h1>Vérifiez votre email</h1>
+      <p>Un email de confirmation vous a été envoyé.</p>
+      <p>Cliquez sur le lien dans l'email pour activer votre compte.</p>
+    </div>
+
+    <div *ngIf="status === 'success'">
+      <div class="icon success-icon">&#10004;</div>
+      <h1>Email vérifié !</h1>
+      <p>Votre compte est maintenant actif.</p>
+      <p>Vous pouvez vous connecter.</p>
+      <a routerLink="/login" class="btn-primary">Se connecter</a>
+    </div>
+
+    <div *ngIf="status === 'already_verified'">
+      <div class="icon">&#9989;</div>
+      <h1>Déjà vérifié</h1>
+      <p>Votre email a déjà été vérifié.</p>
+      <a routerLink="/login" class="btn-primary">Se connecter</a>
+    </div>
+
+    <div *ngIf="status === 'error'">
+      <div class="icon error-icon">&#10060;</div>
+      <h1>Erreur</h1>
+      <p>{{ message || 'Le lien de vérification est invalide ou a expiré.' }}</p>
+      <p>Essayez de vous inscrire à nouveau.</p>
+      <a routerLink="/register" class="btn-primary">S'inscrire</a>
+    </div>
+
+    <div *ngIf="!status" class="mt-2">
+      <a routerLink="/login" class="btn-link">Aller à la connexion</a>
+    </div>
+  </div>
+</div>

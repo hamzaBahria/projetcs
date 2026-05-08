@@ -1,0 +1,20 @@
+<div class="dashboard">
+  <div class="welcome-card">
+    <h1>Bienvenue, {{ user?.name }} !</h1>
+    <p>Vous êtes connecté en tant que <strong>{{ user?.email }}</strong></p>
+  </div>
+
+  <div class="actions">
+    <a routerLink="/profile" class="action-card">
+      <span class="icon">&#128100;</span>
+      <h3>Mon Profil</h3>
+      <p>Voir et modifier vos informations</p>
+    </a>
+
+    <a routerLink="/change-password" class="action-card">
+      <span class="icon">&#128274;</span>
+      <h3>Sécurité</h3>
+      <p>Changer votre mot de passe</p>
+    </a>
+  </div>
+</div>

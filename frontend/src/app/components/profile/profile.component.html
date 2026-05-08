@@ -1,0 +1,41 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <h1>Mon Profil</h1>
+
+    <div class="avatar-section">
+      <div class="avatar">
+        <img *ngIf="user?.avatar_url" [src]="user?.avatar_url" alt="Avatar">
+        <span *ngIf="!user?.avatar_url" class="avatar-placeholder">{{ user?.name?.charAt(0) }}</span>
+      </div>
+      <label class="upload-btn">
+        Changer l'avatar
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden>
+      </label>
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label>Nom</label>
+        <input type="text" formControlName="name" [readonly]="!editing">
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" [readonly]="!editing">
+      </div>
+
+      <div class="error-message" *ngIf="error">{{ error }}</div>
+      <div class="success-message" *ngIf="success">{{ success }}</div>
+
+      <div class="actions">
+        <button *ngIf="!editing" type="button" class="btn-secondary" (click)="toggleEdit()">Modifier</button>
+        <ng-container *ngIf="editing">
+          <button type="submit" class="btn-primary" [disabled]="profileForm.invalid || loading">
+            {{ loading ? 'Sauvegarde...' : 'Enregistrer' }}
+          </button>
+          <button type="button" class="btn-cancel" (click)="toggleEdit()">Annuler</button>
+        </ng-container>
+      </div>
+    </form>
+  </div>
+</div>

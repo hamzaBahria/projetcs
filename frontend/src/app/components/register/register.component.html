@@ -1,0 +1,51 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>Inscription</h1>
+    <p class="subtitle">Créez votre compte</p>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Nom</label>
+        <input id="name" type="text" formControlName="name" placeholder="Votre nom">
+        <span class="error" *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched">
+          Nom requis (min 2 caractères)
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="votre@email.com">
+        <span class="error" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+          Email valide requis
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input id="password" type="password" formControlName="password" placeholder="Min 8 caractères">
+        <span class="error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+          Minimum 8 caractères
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="password_confirmation">Confirmer le mot de passe</label>
+        <input id="password_confirmation" type="password" formControlName="password_confirmation" placeholder="Répétez le mot de passe">
+        <span class="error" *ngIf="registerForm.errors?.['notMatching'] && registerForm.get('password_confirmation')?.touched">
+          Les mots de passe ne correspondent pas
+        </span>
+      </div>
+
+      <div class="error-message" *ngIf="error">{{ error }}</div>
+      <div class="success-message" *ngIf="success">{{ success }}</div>
+
+      <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || loading">
+        {{ loading ? 'Inscription...' : 'S\'inscrire' }}
+      </button>
+    </form>
+
+    <div class="auth-links">
+      <a routerLink="/login">Déjà un compte ? Connectez-vous</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,103 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
+import { User } from '../../models/user.model';
+import { NgIf } from '@angular/common';
+
+@Component({
+  selector: 'app-profile',
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.scss'],
+  standalone: true,
+  imports: [ReactiveFormsModule, RouterLink, NgIf]
+})
+export class ProfileComponent implements OnInit {
+  profileForm: FormGroup;
+  user: User | null = null;
+  editing = false;
+  loading = false;
+  error = '';
+  success = '';
+  avatarPreview: string | null = null;
+
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private authService: AuthService
+  ) {
+    this.profileForm = this.fb.group({
+      name: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]]
+    });
+  }
+
+  ngOnInit(): void {
+    this.loadProfile();
+  }
+
+  loadProfile(): void {
+    this.userService.getProfile().subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.user = res.data;
+          this.profileForm.patchValue({ name: res.data.name, email: res.data.email });
+          this.authService.setUser(res.data);
+        }
+      }
+    });
+  }
+
+  toggleEdit(): void {
+    this.editing = !this.editing;
+    if (!this.editing) {
+      this.profileForm.patchValue({ name: this.user?.name, email: this.user?.email });
+    }
+  }
+
+  onSubmit(): void {
+    if (this.profileForm.invalid) return;
+    this.loading = true;
+    this.error = '';
+    this.success = '';
+
+    this.userService.updateProfile(this.profileForm.value).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.success = 'Profil mis à jour';
+          this.loadProfile();
+          this.editing = false;
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Erreur de mise à jour';
+        this.loading = false;
+      }
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => this.avatarPreview = reader.result as string;
+    reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+    this.userService.uploadAvatar(formData).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.success = 'Avatar mis à jour';
+          this.loadProfile();
+        }
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Erreur upload';
+      }
+    });
+  }
+}
