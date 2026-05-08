@@ -1,9 +1,0 @@
-{
-  "rootDirectory": "frontend",
-  "buildCommand": "ng build",
-  "outputDirectory": "dist/frontend",
-  "framework": "angular",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
-}
