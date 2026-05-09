@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
+    public function health()
+    {
+        return response()->json(['status' => 'ok']);
+    }
     public function show(Request $request)
     {
         $user = $request->user();
