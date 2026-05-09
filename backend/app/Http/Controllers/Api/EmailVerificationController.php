@@ -28,6 +28,10 @@ class EmailVerificationController extends Controller
 
         $user->markEmailAsVerified();
 
-        return redirect()->away($frontendUrl.'/verify-email?status=success');
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return redirect()->away(
+            $frontendUrl.'/verify-email?status=success&token='.$token
+        );
     }
 }

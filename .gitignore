@@ -1,5 +1,4 @@
 # Backend
-/vendor
 /backend/vendor
 /backend/node_modules
 /backend/.env
@@ -25,5 +24,3 @@
 .DS_Store
 Thumbs.db
 *.log
-
-.vercel

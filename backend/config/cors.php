@@ -21,18 +21,10 @@ return [
 
     'allowed_origins' => array_filter(array_map('trim', explode(',', env(
         'CORS_ALLOWED_ORIGINS',
-        implode(',', [
-            env('FRONTEND_URL', 'http://localhost:4200'),
-            'https://projetcs-seven.vercel.app',
-            'https://projetcs-hamzabahrias-projects.vercel.app',
-            'http://localhost:4200',
-        ])
+        env('FRONTEND_URL', 'http://localhost:4200')
     )))),
 
-    'allowed_origins_patterns' => array_filter(array_map('trim', explode(',', env(
-        'CORS_ALLOWED_ORIGIN_PATTERNS',
-        '#^https://projetcs-[a-z0-9-]+-hamzabahrias-projects\.vercel\.app$#'
-    )))),
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 

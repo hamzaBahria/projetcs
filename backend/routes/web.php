@@ -16,3 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/verify-alert', function () {
+    return view('auth.google-setup', ['email' => request('email')]);
+})->name('google.verify-alert');
+
+

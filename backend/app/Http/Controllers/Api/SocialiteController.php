@@ -4,15 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteController extends Controller
 {
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')
+            ->with(['prompt' => 'select_account'])
+            ->redirect();
     }
 
     public function handleGoogleCallback()
@@ -34,13 +38,18 @@ class SocialiteController extends Controller
                 'email' => $googleUser->email,
                 'google_id' => $googleUser->id,
                 'password' => Hash::make(Str::random(24)),
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ]);
-        } else {
-            $user->update([
-                'google_id' => $googleUser->id,
-                'email_verified_at' => $user->email_verified_at ?? now(),
-            ]);
+
+            $user->sendEmailVerificationNotification();
+
+            return redirect()->route('google.verify-alert', ['email' => $user->email]);
+        }
+
+        $user->update(['google_id' => $googleUser->id]);
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
         }
 
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -48,5 +57,29 @@ class SocialiteController extends Controller
         return redirect()->away(
             config('app.frontend_url').'/login?token='.$token.'&user='.urlencode(json_encode($user))
         );
+    }
+
+    public function setPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if (! $user->google_id) {
+            throw ValidationException::withMessages([
+                'email' => ['Ce compte n\'a pas été créé avec Google.'],
+            ]);
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

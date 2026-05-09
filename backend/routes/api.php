@@ -15,8 +15,12 @@ Route::post('/password/forgot', [PasswordController::class, 'sendResetLink']);
 Route::post('/password/reset', [PasswordController::class, 'reset']);
 Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
     ->name('verification.verify');
-Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle']);
-Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
+
+Route::middleware('web')->group(function () {
+    Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle']);
+    Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
+    Route::post('/auth/google/set-password', [SocialiteController::class, 'setPassword']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
