@@ -20,8 +20,10 @@ echo "APP_KEY is set"
 echo "=== Checking storage permissions ==="
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
-echo "=== Clearing cached config ==="
+echo "=== Clearing caches ==="
 php artisan config:clear 2>/dev/null || true
+php artisan route:clear 2>/dev/null || true
+php artisan view:clear 2>/dev/null || true
 
 echo "=== Caching config ==="
 php artisan config:cache 2>&1 || echo "Warning: config:cache failed"
