@@ -25,6 +25,8 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'avatar',
         'google_id',
         'email_verified_at',
+        'verification_code',
+        'verification_code_expires_at',
     ];
 
     /**
@@ -44,6 +46,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'verification_code_expires_at' => 'datetime',
         'password' => 'hashed',
     ];
 }

@@ -1,37 +1,70 @@
 <div class="auth-container">
   <div class="auth-card">
-    <div *ngIf="!status">
+    <div *ngIf="!verified">
       <div class="icon">&#9993;</div>
       <h1>Vérifiez votre email</h1>
-      <p>Un email de confirmation vous a été envoyé.</p>
-      <p>Cliquez sur le lien dans l'email pour activer votre compte.</p>
+      <p class="subtitle">Saisissez le code reçu par email et définissez votre mot de passe.</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" placeholder="votre@email.com">
+          <span class="error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            <span *ngIf="form.get('email')?.errors?.['required']">Email requis</span>
+            <span *ngIf="form.get('email')?.errors?.['email']">Email invalide</span>
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="code">Code de vérification</label>
+          <input id="code" type="text" formControlName="code" placeholder="000000" maxlength="6" style="letter-spacing:6px;font-size:24px;text-align:center;font-weight:bold">
+          <span class="error" *ngIf="form.get('code')?.invalid && form.get('code')?.touched">
+            <span *ngIf="form.get('code')?.errors?.['required']">Code requis</span>
+            <span *ngIf="form.get('code')?.errors?.['pattern']">Code à 6 chiffres</span>
+          </span>
+        </div>
+
+        <div class="divider"><span>Définir le mot de passe</span></div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input id="password" type="password" formControlName="password" placeholder="Min 8 caractères, majuscule, minuscule, chiffre, spécial">
+          <span class="error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+            <span *ngIf="form.get('password')?.errors?.['required']">Mot de passe requis</span>
+            <span *ngIf="form.get('password')?.errors?.['minlength']">Minimum 8 caractères</span>
+            <span *ngIf="form.get('password')?.errors?.['complexity']">Doit contenir majuscule, minuscule, chiffre et caractère spécial (@$!%*?&)</span>
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label for="password_confirmation">Confirmer le mot de passe</label>
+          <input id="password_confirmation" type="password" formControlName="password_confirmation" placeholder="Confirmez le mot de passe">
+          <span class="error" *ngIf="form.get('password_confirmation')?.invalid && form.get('password_confirmation')?.touched">
+            <span *ngIf="form.get('password_confirmation')?.errors?.['required']">Confirmation requise</span>
+          </span>
+          <span class="error" *ngIf="form.errors?.['notMatching'] && form.get('password_confirmation')?.touched">
+            Les mots de passe ne correspondent pas
+          </span>
+        </div>
+
+        <div class="error-message" *ngIf="error">{{ error }}</div>
+        <div class="success-message" *ngIf="success">{{ success }}</div>
+
+        <button type="submit" class="btn-primary" [disabled]="form.invalid || loading">
+          {{ loading ? 'Vérification...' : 'Vérifier et activer' }}
+        </button>
+      </form>
+
+      <div class="auth-links">
+        <a routerLink="/login">Aller à la connexion</a>
+      </div>
     </div>
 
-    <div *ngIf="status === 'success'">
+    <div *ngIf="verified">
       <div class="icon success-icon">&#10004;</div>
-      <h1>Email vérifié !</h1>
-      <p>Votre compte est maintenant actif.</p>
-      <p>Vous pouvez vous connecter.</p>
-      <a routerLink="/login" class="btn-primary">Se connecter</a>
-    </div>
-
-    <div *ngIf="status === 'already_verified'">
-      <div class="icon">&#9989;</div>
-      <h1>Déjà vérifié</h1>
-      <p>Votre email a déjà été vérifié.</p>
-      <a routerLink="/login" class="btn-primary">Se connecter</a>
-    </div>
-
-    <div *ngIf="status === 'error'">
-      <div class="icon error-icon">&#10060;</div>
-      <h1>Erreur</h1>
-      <p>{{ message || 'Le lien de vérification est invalide ou a expiré.' }}</p>
-      <p>Essayez de vous inscrire à nouveau.</p>
-      <a routerLink="/register" class="btn-primary">S'inscrire</a>
-    </div>
-
-    <div *ngIf="!status" class="mt-2">
-      <a routerLink="/login" class="btn-link">Aller à la connexion</a>
+      <h1>Compte activé !</h1>
+      <p>Votre email est vérifié et votre mot de passe est enregistré. Vous allez être redirigé...</p>
+      <a routerLink="/dashboard" class="btn-primary" style="display:block;text-align:center;margin-top:1.5rem;text-decoration:none">Tableau de bord</a>
     </div>
   </div>
 </div>

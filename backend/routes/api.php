@@ -13,8 +13,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/password/forgot', [PasswordController::class, 'sendResetLink']);
 Route::post('/password/reset', [PasswordController::class, 'reset']);
-Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
-    ->name('verification.verify');
+Route::post('/email/verify', [EmailVerificationController::class, 'verify']);
 
 Route::middleware('web')->group(function () {
     Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle']);

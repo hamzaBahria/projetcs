@@ -5,33 +5,67 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class EmailVerificationController extends Controller
 {
-    public function verify(Request $request, $id, $hash)
+    public function verify(Request $request)
     {
-        $frontendUrl = config('app.frontend_url');
+        $validated = $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'code' => 'required|string|size:6',
+            'password' => ['sometimes', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
+        ]);
 
-        if (! $request->hasValidSignature()) {
-            return redirect()->away($frontendUrl.'/verify-email?status=error&message='.urlencode('Lien invalide ou expiré.'));
-        }
-
-        $user = User::findOrFail($id);
-
-        if (sha1($user->email) !== $hash) {
-            return redirect()->away($frontendUrl.'/verify-email?status=error&message='.urlencode('Lien invalide.'));
-        }
+        $user = User::where('email', $validated['email'])->first();
 
         if ($user->hasVerifiedEmail()) {
-            return redirect()->away($frontendUrl.'/verify-email?status=already_verified');
+            return response()->json([
+                'success' => true,
+                'message' => 'Email déjà vérifié.',
+            ]);
+        }
+
+        if (!$user->verification_code || !$user->verification_code_expires_at) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aucun code de vérification trouvé. Veuillez vous inscrire à nouveau.',
+            ], 400);
+        }
+
+        if ($user->verification_code_expires_at->isPast()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Le code de vérification a expiré.',
+            ], 400);
+        }
+
+        if ($user->verification_code !== $validated['code']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Code de vérification invalide.',
+            ], 400);
         }
 
         $user->markEmailAsVerified();
+        $user->update([
+            'verification_code' => null,
+            'verification_code_expires_at' => null,
+        ]);
+
+        if (!empty($validated['password'])) {
+            $user->update([
+                'password' => Hash::make($validated['password']),
+            ]);
+        }
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        return redirect()->away(
-            $frontendUrl.'/verify-email?status=success&token='.$token
-        );
+        return response()->json([
+            'success' => true,
+            'message' => 'Email vérifié avec succès.',
+            'token' => $token,
+            'user' => $user,
+        ]);
     }
 }

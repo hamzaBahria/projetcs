@@ -20,23 +20,6 @@
         </span>
       </div>
 
-      <div class="form-group">
-        <label for="password">Mot de passe</label>
-        <input id="password" type="password" formControlName="password" placeholder="Min 8 caractères, majuscule, minuscule, chiffre, spécial">
-        <span class="error" *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
-          <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Minimum 8 caractères</span>
-          <span *ngIf="registerForm.get('password')?.errors?.['complexity']">Doit contenir majuscule, minuscule, chiffre et caractère spécial (@$!%*?&)</span>
-        </span>
-      </div>
-
-      <div class="form-group">
-        <label for="password_confirmation">Confirmer le mot de passe</label>
-        <input id="password_confirmation" type="password" formControlName="password_confirmation" placeholder="Répétez le mot de passe">
-        <span class="error" *ngIf="registerForm.errors?.['notMatching'] && registerForm.get('password_confirmation')?.touched">
-          Les mots de passe ne correspondent pas
-        </span>
-      </div>
-
       <div class="error-message" *ngIf="error">{{ error }}</div>
       <div class="success-message" *ngIf="success">{{ success }}</div>
 

@@ -16,7 +16,6 @@ class RegisterRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
         ];
     }
 
@@ -27,10 +26,6 @@ class RegisterRequest extends FormRequest
             'email.required' => 'L\'email est requis.',
             'email.email' => 'L\'email n\'est pas valide.',
             'email.unique' => 'Cet email est déjà utilisé.',
-            'password.required' => 'Le mot de passe est requis.',
-            'password.min' => 'Le mot de passe doit faire au moins 8 caractères.',
-            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
-            'password.regex' => 'Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&).',
         ];
     }
 }

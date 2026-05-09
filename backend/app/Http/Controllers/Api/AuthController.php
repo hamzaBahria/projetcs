@@ -10,7 +10,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
 {
@@ -19,28 +18,18 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
         ]);
 
-        if (config('mail.default') === 'log') {
-            $user->markEmailAsVerified();
-            $token = $user->createToken('auth-token')->plainTextToken;
-            return response()->json([
-                'success' => true,
-                'user' => $user,
-                'token' => $token,
-            ], 201);
-        }
-
-        $verificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->email)]
-        );
-        Mail::to($user)->send(new VerifyEmail($verificationUrl));
+        $code = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $user->update([
+            'verification_code' => $code,
+            'verification_code_expires_at' => now()->addMinutes(60),
+        ]);
+        Mail::to($user)->send(new VerifyEmail($code));
 
         return response()->json([
             'success' => true,
+            'email' => $user->email,
             'message' => 'Inscription réussie. Vérifiez votre email.',
         ], 201);
     }
@@ -48,7 +37,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         $user = User::where('email', $request->email)->first();
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $user || ! $user->password || ! Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Email ou mot de passe incorrect.',

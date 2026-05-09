@@ -9,6 +9,7 @@ interface AuthResponse {
   message?: string;
   user?: User;
   token?: string;
+  email?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,7 +21,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  register(data: { name: string; email: string; password: string; password_confirmation: string }): Observable<AuthResponse> {
+  register(data: { name: string; email: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data);
   }
 
@@ -65,6 +66,10 @@ export class AuthService {
   clearAuth(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
+  }
+
+  verifyCode(data: { email: string; code: string; password?: string; password_confirmation?: string }): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/email/verify`, data);
   }
 
   getGoogleLoginUrl(): string {
