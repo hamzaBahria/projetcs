@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { User } from '../../models/user.model';
 import { NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, NgIf]
+  imports: [ReactiveFormsModule, RouterLink, NgIf, FormsModule]
 })
 export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
@@ -22,10 +23,15 @@ export class ProfileComponent implements OnInit {
   success = '';
   avatarPreview: string | null = null;
 
+  deleting = false;
+  showDeleteConfirm = false;
+  deletePassword = '';
+
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.profileForm = this.fb.group({
       name: ['', [Validators.required]],
@@ -74,6 +80,30 @@ export class ProfileComponent implements OnInit {
       error: (err) => {
         this.error = err.error?.message || 'Erreur de mise à jour';
         this.loading = false;
+      }
+    });
+  }
+
+  confirmDelete(): void {
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm = false;
+    this.deletePassword = '';
+  }
+
+  deleteAccount(): void {
+    if (!this.deletePassword) return;
+    this.deleting = true;
+    this.userService.deleteAccount(this.deletePassword).subscribe({
+      next: () => {
+        this.authService.clearAuth();
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        this.error = err.error?.message || 'Échec de la suppression';
+        this.deleting = false;
       }
     });
   }

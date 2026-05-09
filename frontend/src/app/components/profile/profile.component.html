@@ -37,5 +37,23 @@
         </ng-container>
       </div>
     </form>
+
+    <div class="delete-section">
+      <hr>
+      <h3>Zone dangereuse</h3>
+      <p>Une fois votre compte supprimé, toutes vos données seront effacées définitivement.</p>
+      <button *ngIf="!showDeleteConfirm" type="button" class="btn-danger" (click)="confirmDelete()">Supprimer mon compte</button>
+
+      <div *ngIf="showDeleteConfirm" class="delete-confirm">
+        <p>Entrez votre mot de passe pour confirmer la suppression :</p>
+        <input type="password" [(ngModel)]="deletePassword" placeholder="Mot de passe" [ngModelOptions]="{standalone: true}">
+        <div class="delete-actions">
+          <button type="button" class="btn-danger" (click)="deleteAccount()" [disabled]="!deletePassword || deleting">
+            {{ deleting ? 'Suppression...' : 'Confirmer la suppression' }}
+          </button>
+          <button type="button" class="btn-cancel" (click)="cancelDelete()">Annuler</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -29,4 +29,8 @@ export class UserService {
   uploadAvatar(formData: FormData): Observable<UserResponse> {
     return this.http.post<UserResponse>(`${this.apiUrl}/user/avatar`, formData);
   }
+
+  deleteAccount(password: string): Observable<UserResponse> {
+    return this.http.delete<UserResponse>(`${this.apiUrl}/user`, { body: { password } });
+  }
 }

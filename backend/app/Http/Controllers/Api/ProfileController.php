@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
@@ -29,6 +30,27 @@ class ProfileController extends Controller
             'success' => true,
             'message' => 'Profil mis à jour avec succès.',
             'data' => $user,
+        ]);
+    }
+
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'password' => 'required|current_password',
+        ]);
+
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Compte supprimé avec succès.',
         ]);
     }
 
