@@ -1,0 +1,71 @@
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { PasswordService } from '../../services/password.service';
+import { NgIf } from '@angular/common';
+
+@Component({
+  selector: 'app-set-password',
+  templateUrl: './set-password.component.html',
+  styleUrls: ['./set-password.component.scss'],
+  standalone: true,
+  imports: [ReactiveFormsModule, RouterLink, NgIf]
+})
+export class SetPasswordComponent implements OnInit {
+  form: FormGroup;
+  email = '';
+  error = '';
+  success = false;
+  loading = false;
+  successMessage = 'Votre mot de passe a été créé avec succès. Vérifiez votre boîte email et cliquez sur le lien de confirmation pour activer votre compte.';
+
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private passwordService: PasswordService
+  ) {
+    this.form = this.fb.group({
+      password: ['', [Validators.required, Validators.minLength(8)]],
+      password_confirmation: ['', [Validators.required]]
+    }, { validators: this.passwordsMatch });
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.email = params['email'] || '';
+      if (!this.email) {
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  passwordsMatch(group: FormGroup) {
+    const pass = group.get('password')?.value;
+    const confirm = group.get('password_confirmation')?.value;
+    return pass === confirm ? null : { notMatching: true };
+  }
+
+  onSubmit(): void {
+    if (this.form.invalid || !this.email) return;
+    this.loading = true;
+    this.error = '';
+
+    this.passwordService.setPassword({
+      email: this.email,
+      password: this.form.value.password,
+      password_confirmation: this.form.value.password_confirmation,
+    }).subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.success = true;
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = err.error?.message || err.error?.errors?.password?.[0] || 'Une erreur est survenue.';
+        this.loading = false;
+      }
+    });
+  }
+}

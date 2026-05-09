@@ -25,4 +25,8 @@ export class PasswordService {
   changePassword(data: { current_password: string; new_password: string; new_password_confirmation: string }): Observable<PasswordResponse> {
     return this.http.put<PasswordResponse>(`${this.apiUrl}/password/change`, data);
   }
+
+  setPassword(data: { email: string; password: string; password_confirmation: string }): Observable<PasswordResponse> {
+    return this.http.post<PasswordResponse>(`${this.apiUrl}/auth/google/set-password`, data);
+  }
 }

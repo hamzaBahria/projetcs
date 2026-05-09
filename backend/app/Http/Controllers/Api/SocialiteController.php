@@ -43,7 +43,9 @@ class SocialiteController extends Controller
 
             $user->sendEmailVerificationNotification();
 
-            return redirect()->route('google.verify-alert', ['email' => $user->email]);
+            return redirect()->away(
+                config('app.frontend_url').'/set-password?email='.urlencode($user->email)
+            );
         }
 
         $user->update(['google_id' => $googleUser->id]);
