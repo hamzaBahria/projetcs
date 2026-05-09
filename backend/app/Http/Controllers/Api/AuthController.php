@@ -5,12 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
-use App\Mail\VerifyEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
 
 class AuthController extends Controller
 {
@@ -20,17 +17,15 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'email_verified_at' => now(),
         ]);
-        $verificationUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            now()->addMinutes(60),
-            ['id' => $user->id, 'hash' => sha1($user->email)]
-        );
-        Mail::to($user)->send(new VerifyEmail($verificationUrl));
+
+        $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
-            'message' => 'Inscription réussie. Vérifiez votre email.',
+            'user' => $user,
+            'token' => $token,
         ], 201);
     }
 
@@ -43,11 +38,8 @@ class AuthController extends Controller
                 'message' => 'Email ou mot de passe incorrect.',
             ], 401);
         }
-        if (! $user->hasVerifiedEmail()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Veuillez vérifier votre email avant de vous connecter.',
-            ], 403);
+        if (!$user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
         }
         $token = $user->createToken('auth-token')->plainTextToken;
 

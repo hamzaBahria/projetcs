@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => array_filter(array_map('trim', explode(',', env(
         'CORS_ALLOWED_ORIGINS',
-        env('FRONTEND_URL', 'http://localhost:4200')
+        env('FRONTEND_URL', 'https://projetcs-frontend.vercel.app')
     )))),
 
     'allowed_origins_patterns' => [],

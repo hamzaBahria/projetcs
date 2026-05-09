@@ -43,9 +43,10 @@ export class RegisterComponent {
 
     this.authService.register(this.registerForm.value).subscribe({
       next: (res) => {
-        if (res.success) {
-          this.success = res.message || 'Inscription réussie !';
-          setTimeout(() => this.router.navigate(['/verify-email']), 2000);
+        if (res.success && res.token) {
+          this.authService.setUser(res.user);
+          this.authService.setToken(res.token);
+          this.router.navigate(['/dashboard']);
         } else {
           this.error = res.message || 'Erreur d\'inscription';
         }

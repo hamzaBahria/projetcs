@@ -38,21 +38,18 @@ class SocialiteController extends Controller
                 'email' => $googleUser->email,
                 'google_id' => $googleUser->id,
                 'password' => Hash::make(Str::random(24)),
-                'email_verified_at' => null,
+                'email_verified_at' => now(),
             ]);
-
-            $user->sendEmailVerificationNotification();
 
             return redirect()->away(
                 config('app.frontend_url').'/set-password?email='.urlencode($user->email)
             );
         }
 
-        $user->update(['google_id' => $googleUser->id]);
-
-        if (! $user->hasVerifiedEmail()) {
-            $user->sendEmailVerificationNotification();
-        }
+        $user->update([
+            'google_id' => $googleUser->id,
+            'email_verified_at' => now(),
+        ]);
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
