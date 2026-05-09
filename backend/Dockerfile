@@ -33,6 +33,9 @@ COPY --from=composer/composer:latest-bin /composer /usr/bin/composer
 WORKDIR /var/www/html
 COPY . .
 
+RUN cp .env.example .env
+RUN rm -f bootstrap/cache/config.php bootstrap/cache/routes-v7.php bootstrap/cache/packages.php bootstrap/cache/services.php
+
 RUN composer install --no-dev --optimize-autoloader
 RUN npm install && npm run build
 
@@ -40,7 +43,8 @@ RUN mkdir -p storage/framework/cache/data \
     storage/framework/sessions \
     storage/framework/views \
     storage/logs \
-    && chown -R www-data:www-data storage bootstrap/cache
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
 COPY .docker/nginx.conf /etc/nginx/nginx.conf
 COPY .docker/supervisord.conf /etc/supervisord.conf
