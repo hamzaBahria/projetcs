@@ -5,6 +5,11 @@ echo "=== Checking PHP ==="
 php -v
 php -m | grep -E "pdo_mysql|mbstring|xml|gd|openssl"
 
+echo "=== Checking DB config ==="
+echo "DB_CONNECTION=$DB_CONNECTION"
+echo "DATABASE_URL=${DATABASE_URL:+set}"
+echo "DB_HOST=$DB_HOST"
+
 echo "=== Checking APP_KEY ==="
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ]; then
     echo "ERROR: APP_KEY is not set"
