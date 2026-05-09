@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PasswordService } from '../../services/password.service';
+import { passwordComplexity } from '../../validators/password.validator';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -26,7 +27,7 @@ export class ResetPasswordComponent implements OnInit {
   ) {
     this.resetForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8), passwordComplexity()]],
       password_confirmation: ['', [Validators.required]]
     }, { validators: this.passwordsMatch });
   }

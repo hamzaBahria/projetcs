@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { passwordComplexity } from '../../validators/password.validator';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -25,7 +26,7 @@ export class RegisterComponent {
     this.registerForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8), passwordComplexity()]],
       password_confirmation: ['', [Validators.required]]
     }, { validators: this.passwordsMatch });
   }
@@ -47,6 +48,9 @@ export class RegisterComponent {
           this.authService.setUser(res.user);
           this.authService.setToken(res.token);
           this.router.navigate(['/dashboard']);
+        } else if (res.success && res.message) {
+          this.success = res.message;
+          setTimeout(() => this.router.navigate(['/verify-email']), 2000);
         } else {
           this.error = res.message || 'Erreur d\'inscription';
         }

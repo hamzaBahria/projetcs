@@ -38,18 +38,18 @@ class SocialiteController extends Controller
                 'email' => $googleUser->email,
                 'google_id' => $googleUser->id,
                 'password' => Hash::make(Str::random(24)),
-                'email_verified_at' => now(),
             ]);
+
+            if (config('mail.default') === 'log') {
+                $user->markEmailAsVerified();
+            }
 
             return redirect()->away(
                 config('app.frontend_url').'/set-password?email='.urlencode($user->email)
             );
         }
 
-        $user->update([
-            'google_id' => $googleUser->id,
-            'email_verified_at' => now(),
-        ]);
+        $user->update(['google_id' => $googleUser->id]);
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -62,7 +62,7 @@ class SocialiteController extends Controller
     {
         $validated = $request->validate([
             'email' => 'required|email|exists:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
         ]);
 
         $user = User::where('email', $validated['email'])->first();

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { PasswordService } from '../../services/password.service';
+import { passwordComplexity } from '../../validators/password.validator';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -26,7 +27,7 @@ export class SetPasswordComponent implements OnInit {
     private passwordService: PasswordService
   ) {
     this.form = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(8), passwordComplexity()]],
       password_confirmation: ['', [Validators.required]]
     }, { validators: this.passwordsMatch });
   }

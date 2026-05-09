@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PasswordService } from '../../services/password.service';
+import { passwordComplexity } from '../../validators/password.validator';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -23,7 +24,7 @@ export class ChangePasswordComponent {
   ) {
     this.passwordForm = this.fb.group({
       current_password: ['', [Validators.required]],
-      new_password: ['', [Validators.required, Validators.minLength(8)]],
+      new_password: ['', [Validators.required, Validators.minLength(8), passwordComplexity()]],
       new_password_confirmation: ['', [Validators.required]]
     }, { validators: this.passwordsMatch });
   }
