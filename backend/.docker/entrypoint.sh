@@ -3,7 +3,7 @@ set -e
 
 echo "=== Checking PHP ==="
 php -v
-php -m | grep -E "pdo_mysql|mbstring|xml|gd|openssl"
+php -m | grep -E "pdo|mbstring|xml|gd|openssl" || true
 
 echo "=== Checking DB config ==="
 echo "DB_CONNECTION=$DB_CONNECTION"
@@ -34,6 +34,16 @@ php artisan view:cache 2>&1 || echo "Warning: view:cache failed"
 
 echo "=== Storage link ==="
 php artisan storage:link --force 2>&1 || true
+
+echo "=== Waiting for database ==="
+for i in 1 2 3 4 5; do
+    if php artisan migrate --pretend --force 2>/dev/null; then
+        echo "Database connected on attempt $i"
+        break
+    fi
+    echo "Waiting for database... attempt $i"
+    sleep 3
+done
 
 echo "=== Running migrations ==="
 if php artisan migrate --force 2>&1; then
