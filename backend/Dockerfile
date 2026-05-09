@@ -11,6 +11,7 @@ RUN apk add --no-cache \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
+    libpq-dev \
     nodejs \
     npm
 
@@ -18,7 +19,6 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     pdo_pgsql \
-    pgsql \
     mbstring \
     zip \
     exif \
