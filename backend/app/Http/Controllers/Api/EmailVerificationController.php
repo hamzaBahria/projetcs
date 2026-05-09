@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class EmailVerificationController extends Controller
 {
@@ -14,7 +13,6 @@ class EmailVerificationController extends Controller
         $validated = $request->validate([
             'email' => 'required|email|exists:users,email',
             'code' => 'required|string|size:6',
-            'password' => ['sometimes', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'],
         ]);
 
         $user = User::where('email', $validated['email'])->first();
@@ -53,19 +51,10 @@ class EmailVerificationController extends Controller
             'verification_code_expires_at' => null,
         ]);
 
-        if (!empty($validated['password'])) {
-            $user->update([
-                'password' => Hash::make($validated['password']),
-            ]);
-        }
-
-        $token = $user->createToken('auth-token')->plainTextToken;
-
         return response()->json([
             'success' => true,
             'message' => 'Email vérifié avec succès.',
-            'token' => $token,
-            'user' => $user,
+            'email' => $user->email,
         ]);
     }
 }

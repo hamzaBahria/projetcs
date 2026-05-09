@@ -4,7 +4,7 @@
       <div class="icon">&#9993;</div>
       <h1>Vérifiez votre email</h1>
       <p class="subtitle">
-        Saisissez le code reçu par email et définissez votre mot de passe.
+        Saisissez le code à 6 chiffres reçu par email.
       </p>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
@@ -57,66 +57,6 @@
           </span>
         </div>
 
-        <div class="divider"><span>Définir le mot de passe</span></div>
-
-        <div class="form-group">
-          <label for="password">Mot de passe</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="Min 8 caractères, majuscule, minuscule, chiffre, spécial"
-          />
-          <span
-            class="error"
-            *ngIf="
-              form.get('password')?.invalid && form.get('password')?.touched
-            "
-          >
-            <span *ngIf="form.get('password')?.errors?.['required']"
-              >Mot de passe requis</span
-            >
-            <span *ngIf="form.get('password')?.errors?.['minlength']"
-              >Minimum 8 caractères</span
-            >
-            <span *ngIf="form.get('password')?.errors?.['complexity']"
-              >Doit contenir majuscule, minuscule, chiffre et caractère spécial
-              (&#64;$!%*?&)</span
-            >
-          </span>
-        </div>
-
-        <div class="form-group">
-          <label for="password_confirmation">Confirmer le mot de passe</label>
-          <input
-            id="password_confirmation"
-            type="password"
-            formControlName="password_confirmation"
-            placeholder="Confirmez le mot de passe"
-          />
-          <span
-            class="error"
-            *ngIf="
-              form.get('password_confirmation')?.invalid &&
-              form.get('password_confirmation')?.touched
-            "
-          >
-            <span
-              *ngIf="form.get('password_confirmation')?.errors?.['required']"
-              >Confirmation requise</span
-            >
-          </span>
-          <span
-            class="error"
-            *ngIf="
-              form.errors?.['notMatching'] &&
-              form.get('password_confirmation')?.touched
-            "
-          >
-            Les mots de passe ne correspondent pas
-          </span>
-        </div>
-
         <div class="error-message" *ngIf="error">{{ error }}</div>
         <div class="success-message" *ngIf="success">{{ success }}</div>
 
@@ -125,7 +65,7 @@
           class="btn-primary"
           [disabled]="form.invalid || loading"
         >
-          {{ loading ? "Vérification..." : "Vérifier et activer" }}
+          {{ loading ? "Vérification..." : "Vérifier" }}
         </button>
       </form>
 
@@ -138,8 +78,7 @@
       <div class="icon success-icon">&#10004;</div>
       <h1>Compte activé !</h1>
       <p>
-        Votre email est vérifié et votre mot de passe est enregistré. Vous allez
-        être redirigé...
+        Votre email est vérifié. Vous allez être redirigé...
       </p>
       <a
         routerLink="/dashboard"

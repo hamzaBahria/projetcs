@@ -1,13 +1,6 @@
 # Mon App — Full-Stack Authentication Platform
 
-A full-stack monorepo with a **Laravel 10** backend (API, PostgreSQL, Docker) and an **Angular 18** frontend (standalone, Vite).
-
-## Live Demo
-
-- **Frontend:** [https://projetcs-frontend.vercel.app](https://projetcs-frontend.vercel.app)
-- **Backend API:** [https://projetcs-backend-1.onrender.com](https://projetcs-backend-1.onrender.com)
-
----
+A full-stack monorepo with a **Laravel 10** backend (API, MySQL) and an **Angular 18** frontend (standalone, Vite).
 
 ## Features
 
@@ -29,11 +22,9 @@ A full-stack monorepo with a **Laravel 10** backend (API, PostgreSQL, Docker) an
 | -------------- | --------------------------------------- |
 | Backend        | PHP 8.3, Laravel 10                     |
 | Frontend       | Angular 18 (standalone, Vite)           |
-| Database       | PostgreSQL (Render)                     |
+| Database       | MySQL                                   |
 | Auth           | Laravel Sanctum (tokens), Socialite     |
-| Email          | SendGrid SMTP                           |
-| Deployment     | Render (Docker) + Vercel                |
-| Runtime        | nginx + PHP-FPM + Supervisor (Docker)   |
+| Email          | Log driver (local) / SMTP (production)  |
 
 ---
 
@@ -187,7 +178,7 @@ Frontend → POST /api/password/forgot { email }
 - PHP 8.3+
 - Composer
 - Node.js 18+
-- PostgreSQL
+- MySQL
 
 ### Backend
 
@@ -213,16 +204,6 @@ ng serve
 
 The app will be available at `http://localhost:4200` with the backend at `http://localhost:8000`.
 
-### Docker (Render)
-
-The backend includes a Dockerfile for deployment:
-
-```bash
-cd backend
-docker build -t mon-app-backend .
-docker run -p 8080:8080 mon-app-backend
-```
-
 ---
 
 ## Environment Variables
@@ -233,7 +214,7 @@ docker run -p 8080:8080 mon-app-backend
 | --------------------- | ------------------------------ |
 | `APP_URL`             | Backend URL                    |
 | `FRONTEND_URL`        | Frontend URL (CORS)            |
-| `DB_CONNECTION`       | Database driver (pgsql)        |
+| `DB_CONNECTION`       | Database driver (mysql)        |
 | `DB_HOST`/`DB_PORT`/`DB_DATABASE`/`DB_USERNAME`/`DB_PASSWORD` | Database credentials |
 | `MAIL_MAILER`         | Mail driver (smtp or log)      |
 | `MAIL_HOST`/`MAIL_PORT`/`MAIL_USERNAME`/`MAIL_PASSWORD` | SMTP credentials  |
@@ -248,26 +229,3 @@ docker run -p 8080:8080 mon-app-backend
 | Variable  | Description    |
 | --------- | -------------- |
 | `apiUrl`  | Backend API URL|
-
----
-
-## Deployment
-
-### Backend (Render)
-
-1. Connect your GitHub repository
-2. Create a **Web Service** → select **Docker**
-3. Set the root directory to `backend/`
-4. Set build command: `docker build -t app .`
-5. Set start command: (handled by entrypoint)
-6. Add environment variables from `.env.example`
-7. Create a **PostgreSQL** database and link it to the service (auto-sets `DATABASE_URL`)
-
-### Frontend (Vercel)
-
-1. Import your GitHub repository
-2. Set root directory to `frontend/`
-3. Framework preset: **Angular**
-4. Build command: `ng build --configuration production`
-5. Output directory: `dist/frontend/browser`
-6. Add environment variables

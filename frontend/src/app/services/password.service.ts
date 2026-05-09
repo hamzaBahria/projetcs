@@ -6,6 +6,8 @@ import { environment } from '../../environments/environment';
 interface PasswordResponse {
   success: boolean;
   message?: string;
+  token?: string;
+  user?: any;
 }
 
 @Injectable({ providedIn: 'root' })

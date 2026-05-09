@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { passwordComplexity } from '../../validators/password.validator';
 import { NgIf } from '@angular/common';
 
 @Component({
@@ -28,9 +27,7 @@ export class VerifyEmailComponent implements OnInit {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       code: ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]],
-      password: ['', [Validators.required, Validators.minLength(8), passwordComplexity()]],
-      password_confirmation: ['', [Validators.required]]
-    }, { validators: this.passwordsMatch });
+    });
   }
 
   ngOnInit(): void {
@@ -41,12 +38,6 @@ export class VerifyEmailComponent implements OnInit {
     });
   }
 
-  passwordsMatch(group: FormGroup) {
-    const pass = group.get('password')?.value;
-    const confirm = group.get('password_confirmation')?.value;
-    return pass === confirm ? null : { notMatching: true };
-  }
-
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading = true;
@@ -55,15 +46,10 @@ export class VerifyEmailComponent implements OnInit {
 
     this.authService.verifyCode(this.form.value).subscribe({
       next: (res) => {
-        if (res.success && res.token) {
-          this.authService.setUser(res.user!);
-          this.authService.setToken(res.token);
+        if (res.success) {
           this.verified = true;
           this.success = res.message || 'Email vérifié avec succès.';
-          setTimeout(() => this.router.navigate(['/dashboard']), 2000);
-        } else if (res.success) {
-          this.success = res.message || 'Email déjà vérifié.';
-          setTimeout(() => this.router.navigate(['/login']), 2000);
+          setTimeout(() => this.router.navigate(['/set-password'], { queryParams: { email: res.email } }), 1500);
         } else {
           this.error = res.message || 'Erreur de vérification.';
         }

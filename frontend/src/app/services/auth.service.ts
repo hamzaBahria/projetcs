@@ -68,7 +68,7 @@ export class AuthService {
     localStorage.removeItem(this.userKey);
   }
 
-  verifyCode(data: { email: string; code: string; password?: string; password_confirmation?: string }): Observable<AuthResponse> {
+  verifyCode(data: { email: string; code: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/email/verify`, data);
   }
 

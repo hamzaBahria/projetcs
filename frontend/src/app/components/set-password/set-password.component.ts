@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { PasswordService } from '../../services/password.service';
 import { passwordComplexity } from '../../validators/password.validator';
 import { NgIf } from '@angular/common';
@@ -18,12 +19,12 @@ export class SetPasswordComponent implements OnInit {
   error = '';
   success = false;
   loading = false;
-  successMessage = 'Votre mot de passe a été créé avec succès. Vérifiez votre boîte email et cliquez sur le lien de confirmation pour activer votre compte.';
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private authService: AuthService,
     private passwordService: PasswordService
   ) {
     this.form = this.fb.group({
@@ -57,9 +58,13 @@ export class SetPasswordComponent implements OnInit {
       password: this.form.value.password,
       password_confirmation: this.form.value.password_confirmation,
     }).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.success = true;
+      next: (res: any) => {
+        if (res.success && res.token) {
+          this.authService.setToken(res.token);
+          this.authService.setUser(res.user);
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.error = res.message || 'Une erreur est survenue.';
         }
         this.loading = false;
       },
