@@ -30,7 +30,7 @@ export class UserService {
     return this.http.post<UserResponse>(`${this.apiUrl}/user/avatar`, formData);
   }
 
-  deleteAccount(password: string): Observable<UserResponse> {
-    return this.http.delete<UserResponse>(`${this.apiUrl}/user`, { body: { password } });
+  deleteAccount(data: any): Observable<UserResponse> {
+    return this.http.delete<UserResponse>(`${this.apiUrl}/user`, { body: data });
   }
 }

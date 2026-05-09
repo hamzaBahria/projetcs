@@ -94,9 +94,10 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    if (!this.deletePassword) return;
     this.deleting = true;
-    this.userService.deleteAccount(this.deletePassword).subscribe({
+    const data: any = {};
+    if (this.deletePassword) data.password = this.deletePassword;
+    this.userService.deleteAccount(data).subscribe({
       next: () => {
         this.authService.clearAuth();
         this.router.navigate(['/login']);

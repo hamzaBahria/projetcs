@@ -45,10 +45,15 @@
       <button *ngIf="!showDeleteConfirm" type="button" class="btn-danger" (click)="confirmDelete()">Supprimer mon compte</button>
 
       <div *ngIf="showDeleteConfirm" class="delete-confirm">
-        <p>Entrez votre mot de passe pour confirmer la suppression :</p>
-        <input type="password" [(ngModel)]="deletePassword" placeholder="Mot de passe" [ngModelOptions]="{standalone: true}">
+        <div *ngIf="user?.google_id">
+          <p>Votre compte a été créé avec Google. Aucun mot de passe requis.</p>
+        </div>
+        <div *ngIf="!user?.google_id">
+          <p>Entrez votre mot de passe pour confirmer la suppression :</p>
+          <input type="password" [(ngModel)]="deletePassword" placeholder="Mot de passe" [ngModelOptions]="{standalone: true}">
+        </div>
         <div class="delete-actions">
-          <button type="button" class="btn-danger" (click)="deleteAccount()" [disabled]="!deletePassword || deleting">
+          <button type="button" class="btn-danger" (click)="deleteAccount()" [disabled]="(!user?.google_id && !deletePassword) || deleting">
             {{ deleting ? 'Suppression...' : 'Confirmer la suppression' }}
           </button>
           <button type="button" class="btn-cancel" (click)="cancelDelete()">Annuler</button>

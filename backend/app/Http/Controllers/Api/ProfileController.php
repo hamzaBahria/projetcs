@@ -41,9 +41,11 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $request->validate([
-            'password' => 'required|current_password',
-        ]);
+        if (!$user->google_id) {
+            $request->validate([
+                'password' => 'required|current_password',
+            ]);
+        }
 
         if ($user->avatar) {
             Storage::disk('public')->delete($user->avatar);
